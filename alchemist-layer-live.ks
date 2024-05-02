@@ -10,14 +10,17 @@
 
 part / --size 10240 --fstype ext4
 
-services --disabled="sshd,custom-device-pollrates" --enabled="NetworkManager,ModemManager,akmods"
+services --enabled="NetworkManager,ModemManager,akmods"
 
 # Include the appropriate repo definitions
-repo --name=rpmfusion-free --mirrorlist=https://mirrors.rpmfusion.org/metalink?repo=free-fedora-$releasever&arch=$basearch
-repo --name=rpmfusion-nonfree --mirrorlist=https://mirrors.rpmfusion.org/metalink?repo=nonfree-fedora-$releasever&arch=$basearch
+repo --name=rpmfusion-free --mirrorlist=https://mirrors.rpmfusion.org/metalink?repo=free-fedora-$releasever&arch=$basearch --install
+repo --name=rpmfusion-nonfree --mirrorlist=https://mirrors.rpmfusion.org/metalink?repo=nonfree-fedora-$releasever&arch=$basearch --install
+repo --name=starship --baseurl=https://download.copr.fedorainfracloud.org/results/atim/starship/fedora-$releasever-$basearch/ --install
+repo --name=system76-scheduler --baseurl=https://download.copr.fedorainfracloud.org/results/kylegospo/system76-scheduler/fedora-$releasever-$basearch/ --install
 
-
-%packages --excludeWeakdeps
+%packages --exclude-weakdeps
+starship
+system76-scheduler
 gnome-initial-setup
 alacritty
 adw-gtk3-theme
@@ -101,12 +104,15 @@ gstreamer1-plugins-bad-freeworld
 gstreamer1-plugins-ugly
 gstreamer1-vaapi
 rpmfusion-nonfree-release-tainted
+-gnome-classic-session
 -gnome-characters
 -gnome-font-viewer
 -gnome-shell-extension-launch-new-instance
 -gnome-photos
 -gnome-shell-extension-window-list
 -braille-printer-app
+-gnome-classic-session
+-gnome-classic-session-xsession
 %end
 
 %post

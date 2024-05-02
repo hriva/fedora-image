@@ -19,7 +19,7 @@ url --mirrorlist=https://mirrors.fedoraproject.org/mirrorlist?repo=fedora-$relea
 repo --name=rpmfusion-free --mirrorlist=https://mirrors.rpmfusion.org/metalink?repo=free-fedora-$releasever&arch=$basearch
 repo --name=rpmfusion-nonfree --mirrorlist=https://mirrors.rpmfusion.org/metalink?repo=nonfree-fedora-$releasever&arch=$basearch
 
-%packages --excludeWeakdeps
+%packages --exclude-weakdeps
 # Explicitly specified here:
 # <notting> walters: because otherwise dependency loops cause yum issues.
 kernel
