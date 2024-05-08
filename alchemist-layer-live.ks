@@ -15,12 +15,14 @@ services --enabled="NetworkManager,ModemManager,akmods"
 # Include the appropriate repo definitions
 repo --name=rpmfusion-free --mirrorlist=https://mirrors.rpmfusion.org/metalink?repo=free-fedora-$releasever&arch=$basearch --install
 repo --name=rpmfusion-nonfree --mirrorlist=https://mirrors.rpmfusion.org/metalink?repo=nonfree-fedora-$releasever&arch=$basearch --install
-repo --name=starship --baseurl=https://download.copr.fedorainfracloud.org/results/atim/starship/fedora-$releasever-$basearch/ --install
-repo --name=system76-scheduler --baseurl=https://download.copr.fedorainfracloud.org/results/kylegospo/system76-scheduler/fedora-$releasever-$basearch/ --install
+repo --name=starship --baseurl=https://download.copr.fedorainfracloud.org/results/atim/starship/fedora-$releasever-$basearch/
+repo --name=system76-scheduler --baseurl=https://download.copr.fedorainfracloud.org/results/kylegospo/system76-scheduler/fedora-$releasever-$basearch/
+repo --name=asus-linux --baseurl=https://download.copr.fedorainfracloud.org/results/lukenukem/asus-linux/fedora-$releasever-$basearch/
 
 %packages --exclude-weakdeps
 starship
 system76-scheduler
+supergfxctl
 gnome-initial-setup
 alacritty
 adw-gtk3-theme
@@ -104,7 +106,6 @@ gstreamer1-plugins-bad-freeworld
 gstreamer1-plugins-ugly
 gstreamer1-vaapi
 rpmfusion-nonfree-release-tainted
--gnome-classic-session
 -gnome-characters
 -gnome-font-viewer
 -gnome-shell-extension-launch-new-instance
@@ -119,19 +120,4 @@ rpmfusion-nonfree-release-tainted
 
 # set livesys session type
 sed -i 's/^livesys_session=.*/livesys_session="gnome"/' /etc/sysconfig/livesys
-
-sed -i 's/compress=zstd:1/ssd,noatime,space_cache=v2,commit=120,compress=zstd:1,discard=async/' /etc/fstab
-sed -i 's/daily/hourly/g' /lib/systemd/system/btrbk.timer
-systemctl enable fstrim.timer
-#services --enabled=btrbk
-
-
-# DNF flags
-echo 'fastestmirror=1' | sudo tee -a /etc/dnf/dnf.conf
-echo 'max_parallel_downloads=10' | sudo tee -a /etc/dnf/dnf.conf
-echo 'deltarpm=true' | sudo tee -a /etc/dnf/dnf.conf
-
-
 %end
-
-
