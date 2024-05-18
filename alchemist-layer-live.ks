@@ -20,6 +20,8 @@ repo --name=system76-scheduler --baseurl=https://download.copr.fedorainfracloud.
 repo --name=asus-linux --baseurl=https://download.copr.fedorainfracloud.org/results/lukenukem/asus-linux/fedora-$releasever-$basearch/
 
 %packages --exclude-weakdeps
+asusctl
+asusctl-rog-gui
 starship
 system76-scheduler
 supergfxctl
@@ -41,9 +43,6 @@ eza
 gnome-tweaks
 git-crypt
 git-gui
-clamav
-clamav-update
-clamd
 cmake
 cronie
 fd-find
@@ -52,15 +51,17 @@ fzf
 gedit
 git-delta
 git-lfs
-glib2-devel
 gnome-firmware
 gnome-shell-extension-appindicator
 gnome-shell-extension-caffeine
 gnome-shell-extension-just-perfection
 gnome-shell-extension-forge
 gnome-shell-extension-pop-shell
+gnome-shell-extension-pop-shell-shortcut-overrides
 gnome-shell-extension-user-theme
+gnome-extensions-app
 gnome-tweaks
+gparted
 gstreamer1-plugin-libav
 gstreamer1-vaapi
 gstreamer1-vaapi
@@ -84,13 +85,11 @@ ripgrep
 rkhunter
 sassc
 seahorse
-setroubleshoot-server
 trash-cli
 vdpauinfo
 w3m-img
 wget
 xarchiver
-zlib-devel
 zoxide
 zsh
 akmod-nvidia
@@ -106,14 +105,6 @@ gstreamer1-plugins-bad-freeworld
 gstreamer1-plugins-ugly
 gstreamer1-vaapi
 rpmfusion-nonfree-release-tainted
--gnome-characters
--gnome-font-viewer
--gnome-shell-extension-launch-new-instance
--gnome-photos
--gnome-shell-extension-window-list
--braille-printer-app
--gnome-classic-session
--gnome-classic-session-xsession
 %end
 
 %post
