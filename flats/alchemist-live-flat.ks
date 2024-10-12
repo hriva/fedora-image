@@ -14,15 +14,16 @@ repo --name="fedora" --mirrorlist=https://mirrors.fedoraproject.org/mirrorlist?r
 repo --name="updates" --mirrorlist=https://mirrors.fedoraproject.org/mirrorlist?repo=updates-released-f$releasever&arch=$basearch
 repo --name="rpmfusion-free" --mirrorlist=https://mirrors.rpmfusion.org/metalink?repo=free-fedora-$releasever&arch=$basearch --install
 repo --name="rpmfusion-nonfree" --mirrorlist=https://mirrors.rpmfusion.org/metalink?repo=nonfree-fedora-$releasever&arch=$basearch --install
-repo --name="starship" --baseurl=https://download.copr.fedorainfracloud.org/results/atim/starship/fedora-$releasever-$basearch/
-repo --name="system76-scheduler" --baseurl=https://download.copr.fedorainfracloud.org/results/kylegospo/system76-scheduler/fedora-$releasever-$basearch/
-repo --name="asus-linux" --baseurl=https://download.copr.fedorainfracloud.org/results/lukenukem/asus-linux/fedora-$releasever-$basearch/
+repo --name="starship" --baseurl=https://download.copr.fedorainfracloud.org/results/atim/starship/fedora-$releasever-$basearch/ --install
+repo --name="system76-scheduler" --baseurl=https://download.copr.fedorainfracloud.org/results/kylegospo/system76-scheduler/fedora-$releasever-$basearch/ --install
+repo --name="asus-linux" --baseurl=https://download.copr.fedorainfracloud.org/results/lukenukem/asus-linux/fedora-$releasever-$basearch/ --install
+repo --name="Brave-browser" --baseurl=https://brave-browser-rpm-release.s3.brave.com/$basearch --install
 # Root password
 rootpw --iscrypted --lock locked
 # SELinux configuration
 selinux --enforcing
 # System services
-services --disabled="sshd" --enabled="NetworkManager,ModemManager,akmods"
+services --disabled="akmods" --enabled="NetworkManager,ModemManager"
 # System timezone
 timezone America/Guatemala
 # Use network installation
@@ -30,7 +31,7 @@ url --mirrorlist="https://mirrors.fedoraproject.org/mirrorlist?repo=fedora-$rele
 # X Window System configuration information
 xconfig  --startxonboot
 # System bootloader configuration
-bootloader --location=none
+bootloader --append="rd.driver.blacklist=nouveau modprobe.blacklist=nouveau" --location=mbr
 # Clear the Master Boot Record
 zerombr
 # Partition clearing information
@@ -89,10 +90,10 @@ touch /etc/machine-id
 
 %end
 
-%post
+%post --logfile=/root/ks-post.log --erroronfail
 
-# set livesys session type
-sed -i 's/^livesys_session=.*/livesys_session="gnome"/' /etc/sysconfig/livesys
+# Configure firewalld
+firewall-cmd --set-default-zone=drop
 %end
 
 %packages --exclude-weakdeps
@@ -110,6 +111,7 @@ asusctl-rog-gui
 autoconf
 bash-doc
 bat
+brave-browser
 btrbk
 bzip2-devel
 chkrootkit
@@ -192,7 +194,9 @@ zsh
 -device-mapper-multipath
 -fcoe-utils
 -gfs2-utils
+-gnome-tour
 -reiserfs-utils
 -sdubby
+-vim-enhanced
 
 %end

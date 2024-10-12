@@ -10,7 +10,7 @@
 
 part / --size 10240 --fstype ext4
 
-services --enabled="NetworkManager,ModemManager"
+services --disabled=akmods
 
 # Include the appropriate repo definitions
 repo --name=rpmfusion-free --mirrorlist=https://mirrors.rpmfusion.org/metalink?repo=free-fedora-$releasever&arch=$basearch --install
@@ -111,65 +111,10 @@ rpmfusion-nonfree-release-tainted
 -gnome-tour
 %end
 
-%post --logfile=/root/ks-post.log --erroronfail
-%include ./config.sh
-%end
 
 bootloader --append="rd.driver.blacklist=nouveau modprobe.blacklist=nouveau"
 
-%post
-%include ./init.sh
-# Configure zsh as the default shell for new users
-sed -i 's/SHELL=\/bin\/bash/SHELL=\/bin\/zsh/' /etc/default/useradd
-
-# Configure zoxide
-echo 'eval "$(zoxide init zsh)"' >> /etc/zshrc
-
-# Configure eza as an alias for ls
-echo 'alias ls="eza --icons"' >> /etc/zshrc
-echo 'alias ll="eza -l --icons"' >> /etc/zshrc
-echo 'alias la="eza -la --icons"' >> /etc/zshrc
-
-# Enable GNOME extensions
-gnome-extensions enable appindicatorsupport@rgcjonas.gmail.com
-gnome-extensions enable caffeine@patapon.info
-gnome-extensions enable just-perfection-desktop@just-perfection
-gnome-extensions enable forge@jmmaranan.com
-gnome-extensions enable pop-shell@system76.com
-gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
-
-# Set default apps on the GNOME dock
-gsettings set org.gnome.shell favorite-apps "['brave-browser.desktop', 'org.gnome.Terminal.desktop', 'org.gnome.Software.desktop', 'org.gnome.Nautilus.desktop', 'anaconda.desktop']"
-
-# DNF flags
-echo 'fastestmirror=1' | sudo tee -a /etc/dnf/dnf.conf
-echo 'max_parallel_downloads=10' | sudo tee -a /etc/dnf/dnf.conf
-echo 'deltarpm=true' | sudo tee -a /etc/dnf/dnf.conf
-
-
-# Configure GNOME settings
-gsettings set org.gnome.desktop.interface gtk-theme 'adw-gtk3-dark'
-gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
-gsettings set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
-
-# Configure GNOME desktop interface settings from interface.toml
-gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
-gsettings set org.gnome.desktop.interface document-font-name 'Liberation Sans 12'
-gsettings set org.gnome.desktop.interface enable-animations true
-gsettings set org.gnome.desktop.interface enable-hot-corners false
-gsettings set org.gnome.desktop.interface font-antialiasing 'grayscale'
-gsettings set org.gnome.desktop.interface font-hinting 'slight'
-gsettings set org.gnome.desktop.interface font-name 'Liberation Sans 12'
-gsettings set org.gnome.desktop.interface gtk-enable-primary-paste false
-gsettings set org.gnome.desktop.interface gtk-theme 'adw-gtk3-dark'
-gsettings set org.gnome.desktop.interface icon-theme 'MoreWaita'
-gsettings set org.gnome.desktop.interface show-battery-percentage true
-gsettings set org.gnome.desktop.interface text-scaling-factor 1.15
-gsettings set org.gnome.desktop.interface toolkit-accessibility false
-
-
-# Configure profile-sync-daemon
-systemctl --enable psd.service
+%post --logfile=/root/ks-post.log --erroronfail
 
 # Configure firewalld
 firewall-cmd --set-default-zone=drop
