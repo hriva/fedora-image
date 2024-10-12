@@ -1,8 +1,6 @@
 # Maintained by the Fedora Workstation WG:
 # http://fedoraproject.org/wiki/Workstation
 # mailto:desktop@lists.fedoraproject.org
-%include fedora-live-base.ks
-%include fedora-workstation-common.ks
 # Disable this for now as packagekit is causing compose failures
 # by leaving a gpg-agent around holding /dev/null open.
 #
@@ -55,7 +53,9 @@ git-delta
 git-lfs
 gnome-firmware
 gnome-shell-extension-appindicator
+gnome-shell-extension-blur-my-shell
 gnome-shell-extension-caffeine
+gnome-shell-extension-dash-to-dock
 gnome-shell-extension-just-perfection
 gnome-shell-extension-forge
 gnome-shell-extension-pop-shell
@@ -118,4 +118,26 @@ bootloader --append="rd.driver.blacklist=nouveau modprobe.blacklist=nouveau"
 
 # Configure firewalld
 firewall-cmd --set-default-zone=drop
+
+mkdir -p /usr/share/glib-2.0/schemas
+cat >> /usr/share/glib-2.0/schemas/99_alchemist-settings.gschema.override << EOF
+# Enable GNOME Shell extensions
+[org.gnome.shell]
+enabled-extensions=['appindicatorsupport@rgcjonas.gmail.com', 'user-theme@gnome-shell-extensions.gcampax.github.com', 'pop-shell@system76.com',   'just-perfection-desktop@just-perfection',  'dash-to-dock@micxgx.gmail.com', 'blur-my-shell@aunetx',  'caffeine@patapon.info']
+
+# Set theme to adw-gtk3-dark
+[org.gnome.desktop.interface]
+gtk-theme='adw-gtk3-dark'
+
+# Set preferred apps in the dock
+[org.gnome.shell]
+favorite-apps=['brave-browser.desktop', 'org.gnome.Terminal.desktop', 'org.gnome.Software.desktop', 'org.gnome.Nautilus.desktop', 'anaconda.desktop']
+EOF
+
+# Compile the new schemas
+glib-compile-schemas /usr/share/glib-2.0/schemas/
+
 %end
+
+%include fedora-live-base.ks
+%include fedora-workstation-common.ks

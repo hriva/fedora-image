@@ -10,20 +10,20 @@ lang es_US.UTF-8
 network  --bootproto=dhcp --device=link --activate
 # Shutdown after installation
 shutdown
-repo --name="fedora" --mirrorlist=https://mirrors.fedoraproject.org/mirrorlist?repo=fedora-$releasever&arch=$basearch
-repo --name="updates" --mirrorlist=https://mirrors.fedoraproject.org/mirrorlist?repo=updates-released-f$releasever&arch=$basearch
 repo --name="rpmfusion-free" --mirrorlist=https://mirrors.rpmfusion.org/metalink?repo=free-fedora-$releasever&arch=$basearch --install
 repo --name="rpmfusion-nonfree" --mirrorlist=https://mirrors.rpmfusion.org/metalink?repo=nonfree-fedora-$releasever&arch=$basearch --install
 repo --name="starship" --baseurl=https://download.copr.fedorainfracloud.org/results/atim/starship/fedora-$releasever-$basearch/ --install
 repo --name="system76-scheduler" --baseurl=https://download.copr.fedorainfracloud.org/results/kylegospo/system76-scheduler/fedora-$releasever-$basearch/ --install
 repo --name="asus-linux" --baseurl=https://download.copr.fedorainfracloud.org/results/lukenukem/asus-linux/fedora-$releasever-$basearch/ --install
 repo --name="Brave-browser" --baseurl=https://brave-browser-rpm-release.s3.brave.com/$basearch --install
+repo --name="fedora" --mirrorlist=https://mirrors.fedoraproject.org/mirrorlist?repo=fedora-$releasever&arch=$basearch
+repo --name="updates" --mirrorlist=https://mirrors.fedoraproject.org/mirrorlist?repo=updates-released-f$releasever&arch=$basearch
 # Root password
 rootpw --iscrypted --lock locked
 # SELinux configuration
 selinux --enforcing
 # System services
-services --disabled="akmods" --enabled="NetworkManager,ModemManager"
+services --disabled="sshd" --enabled="NetworkManager,ModemManager"
 # System timezone
 timezone America/Guatemala
 # Use network installation
@@ -38,6 +38,31 @@ zerombr
 clearpart --all
 # Disk partitioning information
 part / --fstype="ext4" --size=10240
+
+%post --logfile=/root/ks-post.log --erroronfail
+
+# Configure firewalld
+firewall-cmd --set-default-zone=drop
+
+mkdir -p /usr/share/glib-2.0/schemas
+cat >> /usr/share/glib-2.0/schemas/99_alchemist-settings.gschema.override << EOF
+# Enable GNOME Shell extensions
+[org.gnome.shell]
+enabled-extensions=['appindicatorsupport@rgcjonas.gmail.com', 'user-theme@gnome-shell-extensions.gcampax.github.com', 'pop-shell@system76.com',   'just-perfection-desktop@just-perfection',  'dash-to-dock@micxgx.gmail.com', 'blur-my-shell@aunetx',  'caffeine@patapon.info']
+
+# Set theme to adw-gtk3-dark
+[org.gnome.desktop.interface]
+gtk-theme='adw-gtk3-dark'
+
+# Set preferred apps in the dock
+[org.gnome.shell]
+favorite-apps=['brave-browser.desktop', 'org.gnome.Terminal.desktop', 'org.gnome.Software.desktop', 'org.gnome.Nautilus.desktop', 'anaconda.desktop']
+EOF
+
+# Compile the new schemas
+glib-compile-schemas /usr/share/glib-2.0/schemas/
+
+%end
 
 %post
 # Enable livesys services
@@ -90,13 +115,7 @@ touch /etc/machine-id
 
 %end
 
-%post --logfile=/root/ks-post.log --erroronfail
-
-# Configure firewalld
-firewall-cmd --set-default-zone=drop
-%end
-
-%packages --exclude-weakdeps
+%packages
 @^workstation-product-environment
 @anaconda-tools
 aajohan-comfortaa-fonts
@@ -137,7 +156,9 @@ gnome-extensions-app
 gnome-firmware
 gnome-initial-setup
 gnome-shell-extension-appindicator
+gnome-shell-extension-blur-my-shell
 gnome-shell-extension-caffeine
+gnome-shell-extension-dash-to-dock
 gnome-shell-extension-forge
 gnome-shell-extension-just-perfection
 gnome-shell-extension-pop-shell
